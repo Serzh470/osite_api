@@ -1,5 +1,5 @@
 /** Access to instagram account and get last 8 photos with links and captions */
-const instagramPosts = require("instagram-posts");
+const instagramPosts = require("./instagram-posts");
 
 require("dotenv").config();
 console.log(`process.env.INSTAGRAM_UNAME: ${process.env.INSTAGRAM_UNAME}`);
