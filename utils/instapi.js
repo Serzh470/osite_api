@@ -8,7 +8,6 @@ const uname = process.env.INSTAGRAM_UNAME;
 module.exports.getPosts = async (quantity = 8) => {
   try {
     console.log("get posts for user ", uname);
-    return {posts:'sdfsdf'}
     const data = await instagramPosts(uname, { count: quantity });
     /*
       [
