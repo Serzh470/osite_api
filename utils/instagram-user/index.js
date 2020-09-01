@@ -10,6 +10,7 @@ module.exports = async username => {
 	try {
 		const url = `https://instagram.com/${username}`;
 		const {graphql: {user}} = await got(url, {searchParams: {__a: 1}}).json();
+		console.log('user ', user)
 		const email = getEmails(user.biography).values().next().value || '';
 
 		return {
