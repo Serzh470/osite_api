@@ -1,6 +1,6 @@
 'use strict';
 const got = require('got');
-const instagramUser = require('./instagram-user/instagram-user');
+const instagramUser = require('../instagram-user');
 
 const QUERY_HASH = '58b6785bea111c67129decbe6a448951';
 
