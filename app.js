@@ -9,19 +9,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Allow requests only from locahost in development and requests from user web page
 const allowedHosts = ["localhost:8080", process.env.USER_HOST];
 const hostFilter = function (req, res, next) {
-  if (!allowedHosts.includes(req.hosthame)) {
+  if (!allowedHosts.includes(req.headers.host)) {
     res.status(403);
     res.end();
   }
   next();
 };
 
-// Allow requests only from locahost in development and requests from user web page
-if (process.env.NODE_ENV !== "development" && process.env.USER_HOST) {
-  app.use(hostFilter);
-}
+app.use(hostFilter);
 
 const apiInstagramRouter = require("./routes/instagram");
 
