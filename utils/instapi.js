@@ -1,39 +1,35 @@
 /** Access to instagram account and get last 8 photos with links and captions */
-const instagramPosts = require("./instagram-posts");
+const got = require("got");
+const CronJob = require("cron").CronJob;
 
+// get initial intagram token value
 require("dotenv").config();
-console.log(`process.env.INSTAGRAM_UNAME: ${process.env.INSTAGRAM_UNAME}`);
-const uname = process.env.INSTAGRAM_UNAME;
+const token = process.env.INSTAGRAM_TOKEN;
+
+/** Check access token every day at 00:00. If token expires in less than 24 housr, refresh it. */
+const job = new CronJob(
+  "0 0 * * * *",
+  async function () {
+    const url = `https://graph.instagram.com/refresh_access_token ?grant_type=ig_refresh_token &access_token=${token}`;
+    const response = await got(url);
+    const { access_token, expires_in } = JSON.parse(response.body);
+    if (expires_in <= 86400) {
+      token = access_token;
+    }
+  },
+  null,
+  true,
+  "Europe/Moscow",
+);
 
 module.exports.getPosts = async (quantity = 8) => {
   try {
-    console.log("get posts for user ", uname);
-    const data = await instagramPosts(uname, { count: quantity });
-    /*
-      [
-          {
-              id: 'BRWBBbXjT40',
-              username: 'cats_of_instagram',
-              time: 1488904930,
-              type: 'image',
-              likes: 809,
-              comments: 10,
-              text: 'This is my post',
-              media: 'https://instagram.fbma1-1.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/1231231_123123_1231231.jpg',
-              …
-          },
-          …
-      ]
-    */
-    const posts = data.map((item) => ({
-      id: item.id,
-      link: item.url,
-      src: item.media,
-      alt: item.text,
-    }));
-    return posts;
-  } catch (err) {
-    console.log("No instagram data. Error: ", err);
+    const url = `https://graph.instagram.com/me/media?fields=id,caption,media_url,timestamp&access_token=${token}`;
+    const response = await got(url);
+    const { data } = JSON.parse(response.body);
+    return data.slice(0, quantity);
+  } catch (error) {
+    console.log(error.response.body);
     return [];
   }
 };
