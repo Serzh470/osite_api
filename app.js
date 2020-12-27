@@ -19,7 +19,7 @@ const hostFilter = function (req, res, next) {
   next();
 };
 
-app.use(hostFilter);
+// app.use(hostFilter);
 
 const apiInstagramRouter = require("./routes/instagram");
 
